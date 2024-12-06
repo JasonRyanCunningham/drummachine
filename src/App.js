@@ -10,23 +10,23 @@ class DrumMachine extends React.Component {
     
     this.soundMap = new Map();
     this.soundMap.set("Q", 
-      {description: "Heater-1", clip: "https://cdn.freecodecamp.org/testable-projects-fcc/audio/Heater-1.mp3"});
+      {description: "Heater-1", clip: "https://cdn.freecodecamp.org/testable-projects-fcc/audio/Heater-1.mp3", player: undefined});
     this.soundMap.set("W", 
-      {description: "Heater-2", clip: "https://cdn.freecodecamp.org/testable-projects-fcc/audio/Heater-2.mp3"});
+      {description: "Heater-2", clip: "https://cdn.freecodecamp.org/testable-projects-fcc/audio/Heater-2.mp3", player: undefined});
     this.soundMap.set("E", 
-      {description: "Heater-3", clip: "https://cdn.freecodecamp.org/testable-projects-fcc/audio/Heater-3.mp3"});
+      {description: "Heater-3", clip: "https://cdn.freecodecamp.org/testable-projects-fcc/audio/Heater-3.mp3", player: undefined});
     this.soundMap.set("A", 
-      {description: "Heater-4", clip: "https://cdn.freecodecamp.org/testable-projects-fcc/audio/Heater-4_1.mp3"});
+      {description: "Heater-4", clip: "https://cdn.freecodecamp.org/testable-projects-fcc/audio/Heater-4_1.mp3", player: undefined});
     this.soundMap.set("S", 
-      {description: "Clap", clip: "https://cdn.freecodecamp.org/testable-projects-fcc/audio/Heater-6.mp3"});
+      {description: "Clap", clip: "https://cdn.freecodecamp.org/testable-projects-fcc/audio/Heater-6.mp3", player: undefined});
     this.soundMap.set("D", 
-      {description: "Open-HH", clip: "https://cdn.freecodecamp.org/testable-projects-fcc/audio/Dsc_Oh.mp3"});
+      {description: "Open-HH", clip: "https://cdn.freecodecamp.org/testable-projects-fcc/audio/Dsc_Oh.mp3", player: undefined});
     this.soundMap.set("Z", 
-      {description: "Kick-n'-Hat", clip: "https://cdn.freecodecamp.org/testable-projects-fcc/audio/Kick_n_Hat.mp3"});
+      {description: "Kick-n'-Hat", clip: "https://cdn.freecodecamp.org/testable-projects-fcc/audio/Kick_n_Hat.mp3", player: undefined});
     this.soundMap.set("X", 
-      {description: "Kick", clip: "https://cdn.freecodecamp.org/testable-projects-fcc/audio/RP4_KICK_1.mp3"});
+      {description: "Kick", clip: "https://cdn.freecodecamp.org/testable-projects-fcc/audio/RP4_KICK_1.mp3", player: undefined});
     this.soundMap.set("C", 
-      {description: "Closed-HH", clip: "https://cdn.freecodecamp.org/testable-projects-fcc/audio/Cev_H2.mp3"});
+      {description: "Closed-HH", clip: "https://cdn.freecodecamp.org/testable-projects-fcc/audio/Cev_H2.mp3", player: undefined});
 
     this.keySelected = this.keySelected.bind(this);
     this.handleKeyPress = this.handleKeyPress.bind(this);
@@ -56,23 +56,24 @@ class DrumMachine extends React.Component {
   }
 
   keySelected(letter) {
+    var soundMapEntry = this.soundMap.get(letter);
     this.setState({
-      display: this.soundMap.get(letter).description,
+      display: soundMapEntry.description,
     });
-    new Audio(this.soundMap.get(letter).clip).play();
+    soundMapEntry.player.play();
   }
 
   render () {
     const drumRow1 = [];
     const drumRow2 = [];
-    let i = 0;
+    var i = 0;
     
     for(const [key, obj] of this.soundMap) {
       i = i + 1;
       if(i <= 4) {
-        drumRow1.push(<DrumPad key={key} letter={key} clip={obj.clip} description={obj.description} onClick={()=>{this.keySelected(key)}} /> );
+        drumRow1.push(<DrumPad key={key} letter={key} clip={obj.clip} description={obj.description} onClick={()=>{this.keySelected(key)}} soundMap={this.soundMap}/> );
       } else {
-        drumRow2.push(<DrumPad key={key} letter={key} clip={obj.clip} description={obj.description} onClick={()=>{this.keySelected(key)}} /> );
+        drumRow2.push(<DrumPad key={key} letter={key} clip={obj.clip} description={obj.description} onClick={()=>{this.keySelected(key)}} soundMap={this.soundMap} /> );
       }
       
     }
@@ -103,9 +104,9 @@ class DrumPad extends React.Component {
     return (
       <button onClick={this.props.onClick} class='drum-pad' id={this.props.description}>
         {this.props.letter}
-        <audio src={this.props.clip} id={this.props.letter}>
-          <source src={this.props.clip} type="audio/mp3" /> 
-        </audio>
+        <audio src={this.props.clip} id={this.props.letter} ref={(ref)=>this.props.soundMap.get(this.props.letter).player = ref} />
+          {/*<source src={this.props.clip} type="audio/mp3" />
+        </audio>*/} 
       </button>
     );
   }  
